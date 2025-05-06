@@ -1,70 +1,62 @@
-import pygame
 import sys
+from display import *
 
-# --- Constants ---
-SCREEN_WIDTH = 800  # Width of the game window in pixels
-SCREEN_HEIGHT = 600 # Height of the game window in pixels
-FPS = 120           # Frames per second limit
 
-# Define some basic colors (RGB tuples)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+PANEL_WIDTH = SCREEN_WIDTH - 2 * PADDING
+PANEL_TOTAL_HEIGHT = SCREEN_HEIGHT - 2 * PADDING
+TEXT_PANEL_HEIGHT = int(PANEL_TOTAL_HEIGHT * 0.25)
+TRAJECTORY_PANEL_HEIGHT = PANEL_TOTAL_HEIGHT - TEXT_PANEL_HEIGHT - PADDING
 
-# --- Pygame Setup ---
-# Initialize all the Pygame modules
-pygame.init()
 
-# Create the game window (surface)
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Karman Finder") # Set window title
+# pg Setup
+pg.init()
+screen = pg.display.set_mode(SCREEN_SIZE)
+pg.display.set_caption("Rocket Control Panel (Sketch Layout)")
+clock = pg.time.Clock()
 
-# Create a clock object to help control the frame rate
-clock = pygame.time.Clock()
+
 
 # --- Game Variables ---
-# (We will add game-specific variables here later, like rocket position, velocity etc.)
-# Example: rocket_y = SCREEN_HEIGHT - 50
+altitude = 0.0
+speed = 0.0
+rocket_angle = 0
+fuel_percentage = 1.0
+rocket_sim_pos = (0.0, 0.0)
+trajectory_points_sim = []
+
+
+text_panel = DashboardDisplay((PADDING, PADDING), (PANEL_WIDTH, TEXT_PANEL_HEIGHT))
+trajectory_panel = TrajectoryDisplay((PADDING, text_panel.panel.bottom + PADDING), (PANEL_WIDTH, TRAJECTORY_PANEL_HEIGHT))
+
 
 # --- Main Game Loop ---
 running = True
 while running:
     # --- Event Handling ---
-    # Check for all events happening each frame
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: # If the user clicks the close button (X)
-            running = False # Exit the loop
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
 
-        # Add other event handling here (e.g., keyboard presses)
-        # if event.type == pygame.KEYDOWN:
-        #     if event.key == pygame.K_SPACE:
-        #         print("Space bar pressed!")
+    # --- Game Logic / State Updates (TOY INPUT) ---
+    altitude += 0.1
+    speed += 0.5
 
-    # --- Game Logic / State Updates ---
-    # (Update game state here - e.g., move the rocket based on physics)
-    # This is where your simulation calculations will happen each frame.
-    # Example: rocket_y -= 1 # Move up slightly
+    dx = 0.5
+    dy = 0.2
+    rocket_sim_pos = (rocket_sim_pos[0] + dx, rocket_sim_pos[1] + dy)
 
+    trajectory_points_sim.append(rocket_sim_pos)
     # --- Drawing ---
-    # First, fill the screen with a background color (e.g., black)
-    # This clears the previous frame.
     screen.fill(BLACK)
+    text_panel.update(screen, altitude, speed)
+    trajectory_panel.update(screen, trajectory_points_sim)
 
-    # Draw game elements here (e.g., rocket, ground, UI text)
-    # Example: pygame.draw.rect(screen, RED, (SCREEN_WIDTH/2 - 10, rocket_y, 20, 40)) # Draw a simple rectangle
-
-    # --- Update Display ---
-    # Make the most recently drawn frame visible.
-    pygame.display.flip() # Or pygame.display.update()
+    pg.display.flip()
 
     # --- Frame Rate Control ---
-    # Wait/pause to ensure the loop runs at the desired FPS.
     clock.tick(FPS)
 
-# --- Quit Pygame ---
-# This runs after the loop ends (running = False)
+# --- Quit pg ---
 print("Exiting simulator...")
-pygame.quit() # Uninitialize Pygame modules
-sys.exit()  # Exit the Python script cleanly
+pg.quit()
+sys.exit() 

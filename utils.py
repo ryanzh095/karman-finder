@@ -1,0 +1,13 @@
+# Define some basic colors (RGB tuples)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+GRAY = (100, 100, 100)
+
+PADDING = 10
+SCREEN_SIZE = (1920, 1080)
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
+FPS = 120
